@@ -1,11 +1,44 @@
-// src/pages/index.js
 import Head from "next/head";
+import { useState } from "react";
 
 export default function Home() {
+  const [loading, setLoading] = useState(false);
+
+  async function handleCheckout(provider, item) {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          provider, // "stripe" or "paypal"
+          items: [item],
+        }),
+      });
+
+      const data = await res.json();
+
+      // Stripe returns checkout URL
+      if (data.url) {
+        window.location.href = data.url;
+      }
+
+      // PayPal returns ID
+      if (data.id) {
+        window.location.href = `https://www.sandbox.paypal.com/checkoutnow?token=${data.id}`;
+      }
+    } catch (err) {
+      console.error("Checkout failed:", err);
+      alert("Something went wrong. Try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <>
       <Head>
-        <title>LazyMonks - Ebooks for a Simpler Life</title>
+        <title>LazyMonks – Ebooks for a Simpler Life</title>
         <meta
           name="description"
           content="LazyMonks offers simple, powerful ebooks to help you chill, grow, and earn with less effort."
@@ -14,10 +47,10 @@ export default function Home() {
 
       <main style={{ fontFamily: "Arial, sans-serif", padding: "2rem" }}>
         <h1 style={{ textAlign: "center", fontSize: "3rem", marginBottom: "1rem" }}>
-          🧘 Welcome to LazyMonks
+          Welcome to LazyMonks
         </h1>
         <p style={{ textAlign: "center", fontSize: "1.2rem", marginBottom: "2rem" }}>
-          4 ebooks to help you relax, grow, and profit — built for modern monks of leisure.
+          4 ebooks to help you relax, grow, and profit – built for modern monks of leisure.
         </p>
 
         <div
@@ -29,81 +62,114 @@ export default function Home() {
         >
           {/* Ebook 1 */}
           <div style={{ border: "1px solid #ddd", borderRadius: "8px", padding: "1rem" }}>
-            <h2>The Lazy Monk’s Guide to Productivity</h2>
-            <p>Work less, achieve more. A simple system to focus only on what matters.</p>
-            <a
-              href="https://www.paypal.com/buy?hosted_button_id=XXXX" // replace XXXX with your PayPal button ID
+            <h2>Passive Hustle</h2>
+            <p>Kickstart your income streams with minimal effort.</p>
+            <button
+              onClick={() =>
+                handleCheckout("stripe", {
+                  name: "Passive Hustle",
+                  price: 9,
+                  quantity: 1,
+                  file: "/assets/ebooks/e1-passive-hustle.pdf",
+                })
+              }
+              disabled={loading}
               style={{
-                display: "inline-block",
-                background: "#0070f3",
+                padding: "0.8rem",
+                background: "#635bff",
                 color: "white",
-                padding: "0.5rem 1rem",
-                borderRadius: "4px",
-                textDecoration: "none",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
               }}
             >
-              Buy Now - $29
-            </a>
+              {loading ? "Loading..." : "Buy $9"}
+            </button>
           </div>
 
           {/* Ebook 2 */}
           <div style={{ border: "1px solid #ddd", borderRadius: "8px", padding: "1rem" }}>
-            <h2>The Digital Monk: Earn Online with Ease</h2>
-            <p>Learn effortless ways to monetize your skills and passions online.</p>
-            <a
-              href="https://www.paypal.com/buy?hosted_button_id=XXXX"
+            <h2>Creator OS</h2>
+            <p>The ultimate system for digital creators to scale.</p>
+            <button
+              onClick={() =>
+                handleCheckout("stripe", {
+                  name: "Creator OS",
+                  price: 12,
+                  quantity: 1,
+                  file: "/assets/ebooks/e2-creator-os.pdf",
+                })
+              }
+              disabled={loading}
               style={{
-                display: "inline-block",
-                background: "#0070f3",
+                padding: "0.8rem",
+                background: "#635bff",
                 color: "white",
-                padding: "0.5rem 1rem",
-                borderRadius: "4px",
-                textDecoration: "none",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
               }}
             >
-              Buy Now - $29
-            </a>
+              {loading ? "Loading..." : "Buy $12"}
+            </button>
           </div>
 
           {/* Ebook 3 */}
           <div style={{ border: "1px solid #ddd", borderRadius: "8px", padding: "1rem" }}>
-            <h2>Mindful Wealth: The Monk’s Guide to Money</h2>
-            <p>Financial freedom with a calm mind — balance money, health, and peace.</p>
-            <a
-              href="https://www.paypal.com/buy?hosted_button_id=XXXX"
+            <h2>Freedom Starter</h2>
+            <p>Step-by-step to break free and work on your own terms.</p>
+            <button
+              onClick={() =>
+                handleCheckout("stripe", {
+                  name: "Freedom Starter",
+                  price: 15,
+                  quantity: 1,
+                  file: "/assets/ebooks/e3-freedom-starter.pdf",
+                })
+              }
+              disabled={loading}
               style={{
-                display: "inline-block",
-                background: "#0070f3",
+                padding: "0.8rem",
+                background: "#635bff",
                 color: "white",
-                padding: "0.5rem 1rem",
-                borderRadius: "4px",
-                textDecoration: "none",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
               }}
             >
-              Buy Now - $29
-            </a>
+              {loading ? "Loading..." : "Buy $15"}
+            </button>
           </div>
 
           {/* Ebook 4 */}
           <div style={{ border: "1px solid #ddd", borderRadius: "8px", padding: "1rem" }}>
-            <h2>The Monk’s Guide to Inner Peace</h2>
-            <p>Simple meditations and habits for a stress-free, joyful life.</p>
-            <a
-              href="https://www.paypal.com/buy?hosted_button_id=XXXX"
+            <h2>Micro SaaS</h2>
+            <p>Launch profitable software products as a solopreneur.</p>
+            <button
+              onClick={() =>
+                handleCheckout("stripe", {
+                  name: "Micro SaaS",
+                  price: 19,
+                  quantity: 1,
+                  file: "/assets/ebooks/e4-micro-saas.pdf",
+                })
+              }
+              disabled={loading}
               style={{
-                display: "inline-block",
-                background: "#0070f3",
+                padding: "0.8rem",
+                background: "#635bff",
                 color: "white",
-                padding: "0.5rem 1rem",
-                borderRadius: "4px",
-                textDecoration: "none",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
               }}
             >
-              Buy Now - $29
-            </a>
+              {loading ? "Loading..." : "Buy $19"}
+            </button>
           </div>
         </div>
       </main>
     </>
   );
 }
+
