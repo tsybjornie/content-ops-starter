@@ -1,3 +1,44 @@
 [build]
   command = "npm run build"
   publish = ".next"
+
+[functions]
+  directory = "netlify/functions"
+
+# ─────────────────────────────────────────────
+#  Scheduled Instagram Token Refresh
+# ─────────────────────────────────────────────
+[[scheduled]]
+  name = "refresh-instagram-token"
+  command = "npm run refresh:instagram"
+  schedule = "@daily" # runs every day
+
+# ─────────────────────────────────────────────
+#  Redirects for API routes
+# ─────────────────────────────────────────────
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# ─────────────────────────────────────────────
+#  Environment Variable Injection
+# ─────────────────────────────────────────────
+[context.production.environment]
+  NODE_ENV = "production"
+  META_APP_ID = "${META_APP_ID}"
+  META_APP_SECRET = "${META_APP_SECRET}"
+  META_ACCESS_TOKEN = "${META_ACCESS_TOKEN}"
+  REFRESH_INTERVAL = "24h"
+
+[context.deploy-preview.environment]
+  NODE_ENV = "development"
+
+[context.branch-deploy.environment]
+  NODE_ENV = "staging"
+
+# ─────────────────────────────────────────────
+#  Optional Plugin Example
+# ─────────────────────────────────────────────
+[[plugins]]
+  package = "@netlify/plugin-sitemap"
